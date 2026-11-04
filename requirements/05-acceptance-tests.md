@@ -21,7 +21,7 @@ Every requirement must map to a test or documented acceptance check. These are *
 | T-013 | HL-007 | Soft-delete contact later; absent from new list but visible in previous finalized list. |
 | T-014 | HL-008 | Copy finalized list into new editable revision without overwriting original. |
 | T-015 | HL-009 | Archive list hides in default view but retains archival access. |
-| T-016 | CSV-001, CSV-002 | Export one row per selected household with independent Guest 1 and Guest 2 columns. |
+| T-016 | CSV-001, CSV-002 | Export one row per included household with Guest 1, Guest 2, and Additional Named People as distinct columns resolved from frozen people snapshots. |
 | T-017 | CSV-003 | For incomplete address, mail-ready mode skips with count, all-included mode retains blank fields with warning. |
 | T-018 | CSV-004 | Quoted fields, commas, newline, Unicode, leading-zero postal code parsed correctly. |
 | T-019 | CSV-005 | Spreadsheet formula-looking value safely exported without modifying source JSON. |
@@ -29,9 +29,9 @@ Every requirement must map to a test or documented acceptance check. These are *
 | T-021 | SEC-001 | Unauthenticated requests to contact, list, and export endpoints return no personal information. |
 | T-022 | SEC-002 | Built public frontend, test fixtures, logs, and deploy assets contain no live personal records or credentials. |
 | T-023 | SEC-003 | Competing edits produce one success and an explicit conflict, not data loss. |
-| T-024 | SEC-004 | Failed save cannot leave canonical and split projections in an inconsistent committed state. |
+| T-024 | SEC-004 | Failed contact edit does not alter the single canonical v2 JSON or any legacy files; interrupted multi-file list finalization is atomic or recoverable. |
 | T-025 | SEC-005 | API enforces repository/path access restrictions and user authorization for all operations. |
-| T-026 | SEC-006 | Existing schema v1.1.0 read-modify-write preserves identities, source records and optional values. |
+| T-026 | SEC-006 | Read-modify-write of migrated v2 data preserves all contact/person IDs, import evidence, source IDs and optional nulls; rejects writes to frozen v1.1 files. |
 | T-027 | UI-001, UI-002 | Complete contacts and holiday-list flows work at 375px and desktop widths without clipping. |
 | T-028 | UI-003 | Fields/dialogs usable by keyboard, with accessible names, error announcements, and visible focus. |
 | T-029 | UI-004 | Loading, no results, saved, offline, unauthorized, and edit-conflict states are accurate. |
@@ -40,6 +40,11 @@ Every requirement must map to a test or documented acceptance check. These are *
 | T-032 | SEC-007 | Private responses are not cached in public assets or saved as permanent localStorage authority. |
 | T-033 | CT-013, HL-011 | Additional named people survive list creation and export model representation. |
 | T-034 | SYS-001 | All mandatory test results have evidence; no missing test is marked PASS. |
+| T-035 | CT-014 | Each Guest 1 and named Guest 2 role resolves to one active person in the same contact; three existing unnamed Guest placeholders remain unlinked and preserved. |
+| T-036 | CT-015 | Migration parity compares original and v2: 61 contacts, 90 person IDs/objects, 154 preserved source records, original name/address/addressee values and soft-delete fields. |
+| T-037 | CT-016 | Editing an imported guest with a saved recipient override requires explicit keep/refresh choice, with no silent stale label rewrite. |
+| T-038 | HL-015 | Archiving/unarchiving only changes catalog metadata; the exact finalized list-version bytes remain unchanged. |
+| T-039 | SYS-002 | Structural JSON Schema validates contacts v2 and holiday-list versions v2; invalid references and duplicate IDs fail semantic validation. |
 
 ## Fixture coverage
 
@@ -48,7 +53,7 @@ Synthetic records must cover: only Guest 1, Guest 1 plus Guest 2, additional gue
 ## Release gates
 
 1. Domain: all invariants, null/missing states, name preservation and historical snapshot tests pass.
-2. Persistence: actual authorized write, read after restart, safe conflicts, atomic projection strategy, restore/rollback.
+2. Persistence: actual authorized single-file v2 contact writes, read after restart, safe conflicts, immutable legacy archive, atomic/recoverable list finalization, restore/rollback.
 3. Privacy: authorization checks on all paths, public artifact checks, safe logs and export access.
 4. CSV: all specified fields, quoting, leading zero, missing-value modes, spreadsheet-safe output.
 5. UI: responsive mobile and desktop, keyboard access, screen-reader labels, loading/error states, Forma overflow checks.
