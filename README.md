@@ -10,7 +10,7 @@ Create and preserve holiday mailing lists from a reusable contact directory; add
 
 - **F# end-to-end**. Limen for the WebAssembly client, Forma for reusable UI components, Folio only if print formatting is required. No Bolero by default.
 - Thin authenticated F# API mediates all access to the private `holiday-list` repository. Never access private GitHub data directly from an unauthenticated public client.
-- Initial persistence: JSON in private `holiday-list` with authenticated, revision-checked writes and durable history. A managed database is a *later option*, not a prerequisite for this small mailing-list application.
+- Initial persistence: the **single authoritative** `private-data/contacts-v2.json` in private `holiday-list`, with authenticated, revision-checked writes and durable history. Guest 1 and Guest 2 reference people nested once inside each contact. Legacy v1.1.0 files are frozen. A managed database is a *later option*, not a prerequisite.
 - No Kubernetes, Terraform, or a new custom framework. Prefer a simple monolith and existing Echelon packages when their current versions and APIs have been verified.
 - Unit tests, contract tests, integration tests, and browser smoke tests are required.
 
@@ -23,14 +23,16 @@ Create and preserve holiday mailing lists from a reusable contact directory; add
 5. [Acceptance and verification](requirements/05-acceptance-tests.md)
 6. [Build sequence, scope, decisions](requirements/06-build-plan.md)
 7. [Machine-readable requirements register](requirements/requirements.json)
+8. [Contact JSON schema v2](schemas/contacts-v2.schema.json)
+9. [Holiday-list JSON schema v2](schemas/holiday-list-v2.schema.json)
 
-**Status:** requirements authored; no implementation or tests are claimed complete. See open design decisions in the build plan. The canonical private source data was inspected at schema version `1.1.0` on 2026-11-04.
+**Status:** requirements and schema contracts updated; no UI, backend, or application test is claimed complete. The private contact data has already been migrated losslessly to **schema 2.0.0**. Source remains 61 contacts and 90 named people, with 154 original source records preserved read-only. [See canonical v2 data](https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json).
 
 ## Data separation
 
 | Repository | Visibility on requirements authoring | Role |
 | --- | --- | --- |
-| `kemiller2002/holiday-list-creator` | Public | Requirements, F# app, synthetic tests, CI. No real contacts. |
+| `kemiller2002/holiday-list-creator` | Public | Requirements, F# app, synthetic tests, CI; no personal data. No real contacts. |
 | `kemiller2002/holiday-list` | Private | Canonical contacts and historical JSON lists; source provenance; address data. |
 
 Do not enable unprotected deployment or live-data access merely because the UI builds.
