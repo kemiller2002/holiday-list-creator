@@ -1,0 +1,745 @@
+{
+  "schema_version": "1.0.0",
+  "generated_for": "holiday-list-creator",
+  "created_on": "2026-11-04",
+  "source_repo": {
+    "repo": "kemiller2002/holiday-list",
+    "schema_version": "1.1.0",
+    "data_classification": "private"
+  },
+  "creator_repo": {
+    "repo": "kemiller2002/holiday-list-creator",
+    "visibility_at_authoring": "public",
+    "real_personal_data_allowed": false
+  },
+  "status_convention": {
+    "not_implemented": "Requirement documented, feature not built",
+    "NOT_RUN": "No test evidence exists"
+  },
+  "requirements": [
+    {
+      "id": "ARCH-001",
+      "area": "architecture",
+      "title": "F# application stack",
+      "acceptance_criterion": "Use F# for domain, API, and WebAssembly frontend; Limen runtime and Forma components, Folio optional.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-027"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "ARCH-002",
+      "area": "architecture",
+      "title": "Server-only private data access",
+      "acceptance_criterion": "All private GitHub data accessed through an authenticated F# server; no private repo credentials in the WASM client.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-021",
+        "T-022"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "ARCH-003",
+      "area": "architecture",
+      "title": "Single canonical contact source",
+      "acceptance_criterion": "Preserve canonical private contact JSON v1.1.0; derived people/source files remain consistent after writes.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-024",
+        "T-026"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "ARCH-004",
+      "area": "architecture",
+      "title": "Minimal persistence",
+      "acceptance_criterion": "Store saved list JSON in private holiday-list repository with revision-controlled commits; no database required for MVP.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-011",
+        "T-023"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "ARCH-005",
+      "area": "architecture",
+      "title": "Verified dependencies",
+      "acceptance_criterion": "Pin verified Limen/Forma compatible versions and use working architecture, not unverified placeholder components.",
+      "priority": "P1",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-034"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "ARCH-006",
+      "area": "architecture",
+      "title": "Safe idempotent operations",
+      "acceptance_criterion": "Create/update/finalize operations are resilient to network retries and preserve stable identifiers.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-031"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-001",
+      "area": "contacts",
+      "title": "Guest 1 separately editable",
+      "acceptance_criterion": "New contact has independently persisted nonblank Guest 1, both frontend and domain.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-002"
+      ],
+      "test_ids": [
+        "T-001"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-002",
+      "area": "contacts",
+      "title": "Guest 2 separately editable and optional",
+      "acceptance_criterion": "Guest 2 is separate, nullable, editable and does not overwrite Guest 1.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-003"
+      ],
+      "test_ids": [
+        "T-001"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-003",
+      "area": "contacts",
+      "title": "Named people never dropped",
+      "acceptance_criterion": "Preserve every named person and separately stored original name, including other/additional guests.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-019",
+        "FR-C-020"
+      ],
+      "test_ids": [
+        "T-002",
+        "T-033"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-004",
+      "area": "contacts",
+      "title": "Contact add and edit",
+      "acceptance_criterion": "Owner can create and edit guest names, surname, recipient, household, notes, and structured address while preserving immutable ID.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-001",
+        "FR-C-004",
+        "FR-C-005",
+        "FR-C-006"
+      ],
+      "test_ids": [
+        "T-002"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-005",
+      "area": "contacts",
+      "title": "Explicit missing fields",
+      "acceptance_criterion": "Address fields allow explicit null; missing_fields records every missing property.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-007",
+        "FR-C-008",
+        "FR-C-009",
+        "FR-C-010",
+        "FR-C-011",
+        "FR-C-012",
+        "FR-C-013"
+      ],
+      "test_ids": [
+        "T-003"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-006",
+      "area": "contacts",
+      "title": "Review incomplete addresses",
+      "acceptance_criterion": "Contact saves with incomplete mailing details but never silently gains mail-ready/verified status.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-014"
+      ],
+      "test_ids": [
+        "T-003"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-007",
+      "area": "contacts",
+      "title": "Postal code stays text",
+      "acceptance_criterion": "No numeric coercion, supports leading zeros and ZIP+4.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-011"
+      ],
+      "test_ids": [
+        "T-004"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-008",
+      "area": "contacts",
+      "title": "Soft-delete contact",
+      "acceptance_criterion": "Mark inactive using is_deleted, deleted_at, deleted_by, deletion_reason; never remove master row.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-015",
+        "FR-C-016",
+        "FR-C-017",
+        "FR-C-018"
+      ],
+      "test_ids": [
+        "T-005"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-009",
+      "area": "contacts",
+      "title": "Restore contact",
+      "acceptance_criterion": "Restore inactive contact while retaining Git commit history and original data.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-005"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-010",
+      "area": "contacts",
+      "title": "No cascading history deletion",
+      "acceptance_criterion": "Contact soft-deletion retains people and source records, and never rewrites old holiday-list snapshots.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-006"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-011",
+      "area": "contacts",
+      "title": "Duplicate candidate review",
+      "acceptance_criterion": "Flag same address/similar name for review without silently merging different recipients.",
+      "priority": "P1",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-007"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-012",
+      "area": "contacts",
+      "title": "Optimistic contact concurrency",
+      "acceptance_criterion": "Reject stale edits with visible conflict and no silent last-write-wins.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-021"
+      ],
+      "test_ids": [
+        "T-008"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-013",
+      "area": "contacts",
+      "title": "Additional named people represented",
+      "acceptance_criterion": "Preserve additional names in contact and saved-list snapshot, not only Guest 1 and Guest 2.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [
+        "FR-C-005",
+        "FR-C-019"
+      ],
+      "test_ids": [
+        "T-033"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-001",
+      "area": "holiday_lists",
+      "title": "Create holiday list with metadata",
+      "acceptance_criterion": "Provide title/year/occasion/notes and stable list ID, with draft status.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-009"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-002",
+      "area": "holiday_lists",
+      "title": "Select active contacts",
+      "acceptance_criterion": "Search/filter/include active contact households, no duplicate contact ID in a list.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-009"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-003",
+      "area": "holiday_lists",
+      "title": "List inclusion independent of contacts",
+      "acceptance_criterion": "Include/exclude or remove from draft changes list only, not master contact or its soft-delete flag.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-010"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-004",
+      "area": "holiday_lists",
+      "title": "Persist draft",
+      "acceptance_criterion": "Selections, copied names/addresses, notes, and status survive reload and restart.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-011"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-005",
+      "area": "holiday_lists",
+      "title": "Finalize immutable snapshot",
+      "acceptance_criterion": "Freeze finalized list values, prohibit edits to finalized version.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-012"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-006",
+      "area": "holiday_lists",
+      "title": "Source edits cannot rewrite history",
+      "acceptance_criterion": "Final list never picks up later contact changes, including name or address.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-012"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-007",
+      "area": "holiday_lists",
+      "title": "Historical soft-delete independence",
+      "acceptance_criterion": "Old saved list remains available when a linked contact later becomes deleted.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-013"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-008",
+      "area": "holiday_lists",
+      "title": "New revision from finalized",
+      "acceptance_criterion": "Copy old final into new editable revision, retain immutable old file.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-014"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-009",
+      "area": "holiday_lists",
+      "title": "Archive list without physical deletion",
+      "acceptance_criterion": "Archived list hidden in active index but visible via archive filter.",
+      "priority": "P1",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-015"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-010",
+      "area": "holiday_lists",
+      "title": "Idempotent create and finalize",
+      "acceptance_criterion": "Retries do not create duplicate list IDs, entries or final versions.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-031"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-011",
+      "area": "holiday_lists",
+      "title": "Named people in snapshots",
+      "acceptance_criterion": "Retain additional named people in list snapshot even if not in the two guest CSV columns.",
+      "priority": "P0",
+      "source_document": "requirements/01-scope-workflows.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-033"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-001",
+      "area": "csv",
+      "title": "Export selected holiday list",
+      "acceptance_criterion": "CSV export includes only included list entries, one row per contact, generated on explicit owner request.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-016"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-002",
+      "area": "csv",
+      "title": "Separate guest columns",
+      "acceptance_criterion": "CSV fixed header includes Contact ID, Guest 1, Guest 2, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-016"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-003",
+      "area": "csv",
+      "title": "Missing address export modes",
+      "acceptance_criterion": "Explicit mail-ready-only skip vs all-included with blanks/warnings; no silent omissions.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-017"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-004",
+      "area": "csv",
+      "title": "Lossless CSV quoting and postal",
+      "acceptance_criterion": "Correct quoting, UTF-8, line breaks, commas, and leading zero ZIP codes.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-018"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-005",
+      "area": "csv",
+      "title": "Spreadsheet-safe export",
+      "acceptance_criterion": "Neutralize formula-like cell inputs in exported CSV while original JSON remains unchanged.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-019"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-006",
+      "area": "csv",
+      "title": "Export saved snapshot not live contact",
+      "acceptance_criterion": "Historical export uses stored list values and does not mutate draft/finalized list.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-020"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-001",
+      "area": "security",
+      "title": "Authenticated all private routes",
+      "acceptance_criterion": "Server authorization for contact/list/history/export and soft-delete/restore endpoints; no anonymous personal data.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-021"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-002",
+      "area": "security",
+      "title": "No PII in public app assets",
+      "acceptance_criterion": "No source records, names, addresses, tokens, or exports in public repo, build, Pages, fixtures or logs.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-022"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-003",
+      "area": "security",
+      "title": "Concurrent update protection",
+      "acceptance_criterion": "Compare-and-swap commit revision semantics, 409 on conflicts, no lost update.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-023"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-004",
+      "area": "security",
+      "title": "Canonical write consistency",
+      "acceptance_criterion": "Master and its projections remain consistent after successful or interrupted commits.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-024"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-005",
+      "area": "security",
+      "title": "Least-privilege backend authorization",
+      "acceptance_criterion": "Server restriction to private repo/path and authorizes operations independently of browser UI.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-025"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-006",
+      "area": "security",
+      "title": "Safe migration from current data",
+      "acceptance_criterion": "Read-modify-write source schema v1.1.0 without dropping existing names, people, source IDs, or null fields.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-026"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SEC-007",
+      "area": "security",
+      "title": "Private response caching restrictions",
+      "acceptance_criterion": "No public storage or permanent localStorage authority for personal data; private responses no-store.",
+      "priority": "P0",
+      "source_document": "requirements/04-architecture-security.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-032"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "UI-001",
+      "area": "ui",
+      "title": "Mobile-first screens",
+      "acceptance_criterion": "Contacts, forms, list editor, and export function on phone-sized viewports without horizontal overflow.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-027"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "UI-002",
+      "area": "ui",
+      "title": "Complete navigation and state",
+      "acceptance_criterion": "Dashboard, contacts, details, edit, new list, draft, historical list, export with correct status feedback.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-027"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "UI-003",
+      "area": "ui",
+      "title": "Accessible interactions",
+      "acceptance_criterion": "Keyboard operation, visible focus, accessible controls, labeled Guest 1 and Guest 2, announced errors.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-028"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "UI-004",
+      "area": "ui",
+      "title": "Honest loading and failure states",
+      "acceptance_criterion": "Loading, empty, offline, forbidden, stale edit, and save errors never show false success.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-029"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "UI-005",
+      "area": "ui",
+      "title": "Forma layout resilience",
+      "acceptance_criterion": "No clipping on long names, addresses, 150 percent text scale or rounded containers.",
+      "priority": "P0",
+      "source_document": "requirements/03-ui-screens.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-030"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SYS-001",
+      "area": "quality",
+      "title": "Verified gates and traceability",
+      "acceptance_criterion": "Every requirement has an acceptance test, evidence and status; no NOT_RUN reported as PASS.",
+      "priority": "P0",
+      "source_document": "requirements/05-acceptance-tests.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-034"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    }
+  ]
+}
