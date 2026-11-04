@@ -75,9 +75,9 @@ Other
   [Cancel]                                [Save Contact]
 ```
 
-- **Guest 1 and Guest 2 are separate inputs, model fields, focus targets, and export columns.**
-- Show auto-suggested card addressee built from supplied guest names; allow manual overrides without silently overwriting.
-- Guest 1 is required on a newly created contact; Guest 2 is optional. Imported legacy records that do not fit this requirement remain readable/editable without name loss.
+- **Guest 1 and Guest 2 are separate inputs, role references into `contact.people[]`, focus targets, and export columns.** Do not duplicate editable name strings outside person records.
+- Show auto-suggested card addressee built from current people; allow manual overrides without silently overwriting. On imported contacts, `card_addressee_override` is populated: when guest names change, prompt to keep or refresh the override.
+- Guest 1 is required on a newly created contact; Guest 2 is optional. Three source values are unnamed `Guest` placeholders: show as unknown, not an identified person. Naming the placeholder creates a new person record without changing the original import evidence. Additional named people remain visible and editable independently.
 - Mark required vs optional. When a mailing field is missing, show "Missing" and allow a draft-quality contact save. Do not invent addresses.
 - Set postal code as text with no numeric coercion; keep leading zeroes.
 - Changes that might indicate duplicate contacts prompt a review notice without automatic merging.
@@ -119,8 +119,8 @@ Other
 - Choose **Mail-ready only** or **All included** (explicit warning for incomplete). Preview first five sample rows in user session, not logs.
 - Show selected list title/revision and number of rows that will be exported.
 - CSV columns in **exact order**:
-  `Contact ID, Guest 1, Guest 2, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country`.
-- Use one row per list entry where `include=true`, optional missing fields represented as empty CSV cells. Guest 2 is a distinct column even when absent.
+  `Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country`. Resolve guest names and additional named people from the **saved list's people_snapshot[]**, not the live contact.
+- Use one row per list entry where `include=true`, optional missing fields represented as empty CSV cells. Guest 2 is a distinct column even when absent. Unnamed `Guest` placeholders are labeled as such for review, not treated as verified person names.
 - User receives a local download; do not upload exported CSV to a public artifact bucket or place it in a build directory.
 - Use filename `holiday-list-{year}-{safe-list-slug}-r{revision}.csv`, sanitize filename and prevent path traversal.
 
