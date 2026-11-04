@@ -1,109 +1,95 @@
-# 02. Data contracts, IDs, and history
+# Data contracts: normalized v2
 
-## Existing source of truth
+**Status:** the private data migration is complete. Application implementation and automated integration tests are not complete.
 
-The private repository `kemiller2002/holiday-list` is the starting authority for contact data. Inspected canonical file: `private-data/christmas-cards-2026.json`, `meta.schema_version = 1.1.0`. Existing associated projections: `contacts-2026.json`, `people-2026.json`, `source-records-2024.json`. They currently contain 61 contacts, 90 person entries, and 154 original source rows. These are *baseline figures*, not counts to hardcode.
+## Authority and historical data
 
-Contact fields already include `contact_id`, `card_recipient`, `names` (including `guest_1`/`guest_2`), `people`, `household_designation`, `address`, `address_as_entered`, `address_last_verified`, `missing_fields`, `review_reasons`, `mailing_status`, source references, and four soft-delete fields.
+The **only editable contact authority** is the PRIVATE repository file:
+https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json
 
-### Field contract (FR identifiers)
+- schema_version = 2.0.0
+- Current baseline = 61 contacts with 90 named people
+- Historical import = 154 original rows in frozen v1.1.0 archives
+- Separate old contacts-2026.json, people-2026.json, source-records-2024.json, and christmas-cards-2026.json are READ-ONLY historical files, not editable projections.
+- Never write real names or addresses to this public creator repository, browser application assets, CI logs, or public deployments.
+- Structural contract: ../schemas/contacts-v2.schema.json
 
-| ID | Field | Type / rules |
+## Four logical entities
+
+1. **Contact:** single mailing household with one structured postal address and a nested people array.
+2. **Person:** one named person stored exactly once under that contact, with immutable person_id and preserved name_as_entered plus editable display_name.
+3. **HolidayListVersion:** a persisted draft or immutable finalized revision with list_id and version_id.
+4. **HolidayListEntry:** a selected contact's snapshot of names, people roles, address, and mailing label; never a mutable link to current contact data.
+
+Raw imported source records remain an immutable archive outside the editable domain.
+
+## Contact fields and IDs
+
+| Field ID | Path | Contract |
 | --- | --- | --- |
-| FR-C-001 | `contact_id` | Unique immutable string; never recycled, including after soft deletion. |
-| FR-C-002 | `guest_1` | Editable nonblank string for newly created records; preserve raw imported value in provenance. |
-| FR-C-003 | `guest_2` | Editable string or explicit `null`, independent of Guest 1. |
-| FR-C-004 | `surname` | String or `null`; do not assign automatically to unverified additional guests. |
-| FR-C-005 | `additional_names_or_household` | String or `null`; preserve names and "Family" indications. |
-| FR-C-006 | `card_recipient` | Editable addressee / generated suggestion, stored separately from guest inputs; never overwrite manual overrides. |
-| FR-C-007 | `address.line_1` | String or `null`; required for mail-ready. |
-| FR-C-008 | `address.line_2` | String or `null`; optional. |
-| FR-C-009 | `address.city` | String or `null`; required for mail-ready. |
-| FR-C-010 | `address.state` | String or `null`; required for US mail-ready. |
-| FR-C-011 | `address.postal_code` | String or `null`, never integer; required for mail-ready. |
-| FR-C-012 | `address.country` | String or `null`; `US` is an existing default only when known, not inferred for unknown imported records. |
-| FR-C-013 | `missing_fields` | Explicit missing-path index; synchronize with null fields. |
-| FR-C-014 | `address_last_verified` | Timestamp or `null`, no automatic verification claims. |
-| FR-C-015 | `is_deleted` | Boolean default `false`. |
-| FR-C-016 | `deleted_at` | UTC ISO 8601 timestamp or `null`. |
-| FR-C-017 | `deleted_by` | Actor identifier or `null`. |
-| FR-C-018 | `deletion_reason` | String or `null`. |
-| FR-C-019 | `people` | Array with immutable `person_id`, original `name_as_entered`, display name, role; retain every named person. |
-| FR-C-020 | `source_record_ids` | Original provenance IDs; never replace or rewrite historical source values. |
-| FR-C-021 | `version` | Monotonic revision for compare-and-swap writes; derive for legacy import if not already present. |
+| FR-C-001 | contact_id | Immutable, stable across edits and soft deletes |
+| FR-C-002 | people[] | Only editable collection of named individuals; no separate writable people index |
+| FR-C-003 | people[].person_id | Unique ID; each person.contact_id matches parent |
+| FR-C-004 | people[].name_as_entered | Preserve original entered name, never overwrite as a result of edits |
+| FR-C-005 | people[].display_name | Current editable person name; reset derived-name flag when manually edited |
+| FR-C-006 | guest_roles.guest_1_person_id | Required, refers to a named active person in people[] |
+| FR-C-007 | guest_roles.guest_2_person_id | Optional nullable ID of a distinct named person in people[] |
+| FR-C-008 | guest_roles.guest_2_unnamed_label | Optional null or unnamed source placeholder, mutually exclusive with named Guest 2 |
+| FR-C-009 | surname | String or null; don't infer when unknown |
+| FR-C-010 | additional_names_or_household | String or null; original household/extra text retained |
+| FR-C-011 | household_designation | String or null |
+| FR-C-012 | card_addressee_override | String or null; imported card recipients preserved exactly here |
+| FR-C-013 | address.line_1 | String or null, required for a mail-ready address |
+| FR-C-014 | address.line_2 | String or null, optional |
+| FR-C-015 | address.city | String or null, required for mail-ready |
+| FR-C-016 | address.state | String or null, required for domestic US mail-ready |
+| FR-C-017 | address.postal_code | String or null; never coerce to number |
+| FR-C-018 | address.country | String or null; no invented country |
+| FR-C-019 | missing_fields | Recompute from null current fields on save; not independently editable |
+| FR-C-020 | address_last_verified | Timestamp or null; never assume a 2024 address is current |
+| FR-C-021 | source_record_ids | Preserve immutable references to original 154 source rows |
+| FR-C-022 | legacy_import | Immutable name, address, original card label, review and duplicate evidence |
+| FR-C-023 | review_flags | Previously suspected duplicates and source review reasons; informational |
+| FR-C-024 | revision | Increment on edit; reject stale expected Git blob SHA |
+| FR-C-025 | notes | Nullable editable text |
+| FR-C-026 | is_deleted | Boolean; false by default |
+| FR-C-027 | deleted_at | UTC ISO8601 timestamp or null |
+| FR-C-028 | deleted_by | Actor ID or null |
+| FR-C-029 | deletion_reason | Optional text or null |
 
-Existing legacy name shape remains readable: `names.guest_1`, `names.guest_2`, `names.combine_guests`, `names.surname`, `names.surname_combined`, `names.additional_names_or_household`, and `names.full_name`. Display of names must not assume one person per contact. New schema may be an additive v1.2 migration, not a destructive rewrite.
+All properties remain present even if null. A missing optional Guest 2 or address line 2 is not a mail-readiness error.
 
-## Proposed saved-list JSON v1 contract
+## Guest 1 and Guest 2
 
-A private JSON file at `private-data/lists/{year}/{list_id}.json` is one versioned list aggregate; a private index `private-data/lists/index.json` may speed browsing, but all list files remain authoritative for their own content.
+The UI has **two separately labeled guest fields**. Their current editable names resolve to people[].display_name by guest_roles person ID. Do not introduce separate editable guest_1_name/guest_2_name strings; those create synchronization bugs.
 
-```json
-{
-  "schema_version": "1.0.0",
-  "list_id": "HL-2026-0001",
-  "title": "Christmas Cards 2026",
-  "year": 2026,
-  "occasion": "Christmas",
-  "notes": null,
-  "status": "draft",
-  "revision": 1,
-  "created_at": "2026-11-04T18:00:00Z",
-  "created_by": "owner",
-  "updated_at": "2026-11-04T18:00:00Z",
-  "finalized_at": null,
-  "prior_revision_id": null,
-  "entries": [
-    {
-      "entry_id": "HLE-0001",
-      "contact_id": "HC-2026-000",
-      "include": true,
-      "guest_1": "Sample",
-      "guest_2": null,
-      "card_recipient": "Sample Recipient",
-      "additional_names_or_household": null,
-      "address": {
-        "line_1": null,
-        "line_2": null,
-        "city": null,
-        "state": null,
-        "postal_code": null,
-        "country": null
-      },
-      "missing_fields": {
-        "address.line_1": "missing",
-        "address.line_2": "missing",
-        "address.city": "missing",
-        "address.state": "missing",
-        "address.postal_code": "missing",
-        "address.country": "missing"
-      },
-      "notes": null,
-      "source_contact_version": 1
-    }
-  ]
-}
-```
+- Guest 1 must reference exactly one active person on a new contact.
+- Guest 2 is optional and must be different from Guest 1 if named.
+- Three imported Guest 2 values are literal "Guest" placeholders; their guest_2_unnamed_label is retained, with no invented person ID. When the user names the person, create a new person ID and clear the live placeholder, while keeping the old source value in legacy_import.
+- Additional named people beyond two guest slots stay in people[] and in each saved list's snapshot.
+- Editing a person's display name does not erase their imported name_as_entered or source records.
+- Editing guests when card_addressee_override is present must prompt to keep or update that override, never silently change the mailing addressee.
+- Deleting a person referenced as Guest 1 requires a deliberate reassignment before the contact can be used for new mailings.
 
-**The example is synthetic.** The timestamps and IDs are examples only. Production IDs must be unique, not copied from examples.
+## Derived state
 
-### Saved-list rules
+Mailing readiness is computed using active state, guest role resolution, and required address fields. Search indexes, display addressee (when override is null), and missing_fields are derived. Do not persist an independently editable mailing_status or split person index. Historical imported mailing_status is preserved only in legacy_import.
 
-- **L-01:** `list_id` stable across revisions. Each finalized version gets a unique revision identity and immutable bytes. Saving a draft increments revision / storage version.
-- **L-02:** Every entry has immutable `entry_id` and `contact_id` plus **copied values** for guest names, addressee, complete address, missing-field state, and any optional personal message.
-- **L-03:** The full canonical contact remains elsewhere; no extra person is deleted by making a two-guest mailing row. Additional named people remain available in contact detail and can be carried into a `named_people_snapshot` array when present.
-- **L-04:** Saved drafts are persisted, not reconstructed on each load from current contacts. User can deliberately refresh a draft entry from the current contact and must see the changed-field diff before applying it.
-- **L-05:** Finalized snapshots are immutable. To amend, copy to a new revision linked via `prior_revision_id`. Never mutate a finalized historical copy.
-- **L-06:** Soft deletion of a current contact never alters prior lists. A new list excludes deleted contacts by default; an old list may show a "source contact deleted" banner without changing its snapshot.
-- **L-07:** Deleted list records can be archived/hidden using `is_archived` and timestamps, not physically removed. Distinguish archive from contact `is_deleted`.
-- **L-08:** One list may contain a given `contact_id` at most once. Distinct contacts at the same postal address remain distinct unless a user explicitly consolidates them (a separate reviewed operation).
-- **L-09:** Missing is not the same as blank string. On save, normalize empty *new* optional input to `null` but preserve imported raw values in historical source records.
-- **L-10:** Historical list creation and export are independent of the live address book, except for explicit user-requested draft refreshes.
+## Saved holiday lists (schema v2)
 
-## Migration and consistency
+Structural contract: ../schemas/holiday-list-v2.schema.json
 
-- Build an importer that reads existing v1.1.0 data and preserves all contact IDs, person IDs, names, 154 source records, and deleted metadata.
-- Existing contact JSON bundle remains canonical. Writes to current contact data must update its split projection files in the same revision-protected logical transaction; partial writes are detectable and recoverable.
-- Do not move source records into list snapshots; retain stable references for provenance.
-- New/edited contacts must retain original `name_as_entered` information and not invent known surnames for guests.
-- Validate each write: unique IDs, valid status transitions, no missing required JSON keys, soft-delete consistency, snapshot completeness.
+- A stable list_id groups versions; version_id uniquely identifies each version; revision is monotonic; previous_version_id connects a copied prior final version.
+- Status is **draft** or **finalized**. Finalized version files must never be overwritten, including when changing archive status.
+- A draft can be updated with optimistic concurrency and saved durably. Do not automatically refresh draft snapshots when contacts change; offer an explicit diff/refresh action.
+- Each entry carries entry_id, contact_id, include, guest_1_person_id, guest_2_person_id, guest_2_unnamed_label, people_snapshot[], card_addressee_snapshot, surname_snapshot, additional_names_or_household_snapshot, household_designation_snapshot, address_snapshot, missing_fields_snapshot, source_contact_revision and optional notes.
+- Guest IDs in a list entry resolve **only to its copied people_snapshot[]**. CSV and historical display must not fetch new contact values.
+- Store drafts under private-data/holiday-lists/{list_id}/draft.json, final versions under private-data/holiday-lists/{list_id}/versions/{version_id}.json, and archive flags in separate private-data/holiday-lists/index.json. Immutable finalized versions never change merely because they're archived.
+- An entry is unique by contact_id within a list; unrelated recipients at the same postal address are not automatically merged.
+- Default CSV includes Guest 1, Guest 2, Additional Named People, and Additional Names / Household, each separately, plus recipient and all address columns.
+
+## Preservation checks and implementation gates
+
+The migration verified 61 unchanged contact IDs, 90 unchanged person IDs and person objects, untouched 154 original source records, retained source links, original names, addresses, import evidence, addressees and soft-delete fields. Guest 1 is resolved in all 61 records; 26 have named Guest 2 references and three have unnamed Guest 2 placeholders.
+
+**NOT_RUN:** JSON Schema library validation, F# typed-domain integration, contact edit/reload, secure API checks, list snapshot persistence, CSV interoperability, browser accessibility, and runtime writes. Build agents must not report those passing without execution evidence.
