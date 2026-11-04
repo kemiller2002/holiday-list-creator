@@ -6,7 +6,7 @@ Status: proposed baseline, 2026-11-04.
 
 One person may have two separate guest name inputs and an optional household/family designation. A **contact** is a mailing household/recipient record. A **person** is a named individual linked to that contact. A **holiday list** is an independently saved mailing campaign (for example "Christmas 2026"). A **list entry** is a selected contact plus the mailing snapshot used by that specific list.
 
-Never collapse Guest 1 and Guest 2 into an irreversible display-only string. Do not drop `Plus` or additional named people when migrating old records. Preserve the imported values even when an editable presentation is cleaner.
+Never collapse Guest 1 and Guest 2 into an irreversible display-only string. Each guest role references the unique person in the contact's nested `people[]`; Guest 2 may instead be an unnamed source placeholder. Do not drop `Plus` or additional named people, and preserve the original source fields in frozen import history.
 
 ## User journeys
 
@@ -27,7 +27,7 @@ Never collapse Guest 1 and Guest 2 into an irreversible display-only string. Do 
 1. Use a clearly labeled Delete action in contact detail or the directory.
 2. Confirm and optionally enter a reason. The server sets `is_deleted=true`, UTC `deleted_at`, authenticated actor `deleted_by`, and `deletion_reason`.
 3. The contact disappears from default active selection but remains searchable under Deleted; retain all people and source history.
-4. Restore reverses active-state metadata per the private repository's v1.1.0 deletion contract; no physical deletion.
+4. Restore reverses active-state metadata under the normalized v2 contact model; neither original source records nor historical holiday-list snapshots are modified.
 5. Deleting a person separately does not cascade delete the household; deleting a household hides it from current mailing selections without erasing historical lists.
 
 ### J-04: Create a holiday list
@@ -46,7 +46,7 @@ Never collapse Guest 1 and Guest 2 into an irreversible display-only string. Do 
 ### J-06: Export
 1. Open a draft or saved list and choose Export CSV.
 2. Show a preview of included rows and a warning for missing required mailing information; allow either "only mail-ready" or "all included with missing values blank and warnings" with an explicit user choice.
-3. Export one row per selected contact/list entry with separate `Guest 1` and `Guest 2` columns, recipient, address lines, city, state, ZIP/postal code, country, and contact ID.
+3. Export one row per selected contact/list entry with separate `Guest 1`, `Guest 2`, `Additional Named People`, and `Additional Names / Household` columns, recipient, address lines, city, state, ZIP/postal code, country, and contact ID. Resolve names solely from the saved people snapshot.
 4. Preserve commas, quotes, line breaks, Unicode, and postal-code leading zeroes. No labels or "send to printer" control fields. Exporting never changes the saved list.
 5. Show total exported vs skipped and a machine-readable warning report (in-app, without exposing contacts publicly).
 
