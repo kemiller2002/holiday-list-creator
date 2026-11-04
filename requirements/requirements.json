@@ -1,11 +1,14 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "generated_for": "holiday-list-creator",
   "created_on": "2026-11-04",
   "source_repo": {
     "repo": "kemiller2002/holiday-list",
-    "schema_version": "1.1.0",
-    "data_classification": "private"
+    "schema_version": "2.0.0",
+    "data_classification": "private",
+    "canonical_path": "private-data/contacts-v2.json",
+    "legacy_schema_version": "1.1.0",
+    "legacy_files_read_only": true
   },
   "creator_repo": {
     "repo": "kemiller2002/holiday-list-creator",
@@ -49,14 +52,16 @@
     {
       "id": "ARCH-003",
       "area": "architecture",
-      "title": "Single canonical contact source",
-      "acceptance_criterion": "Preserve canonical private contact JSON v1.1.0; derived people/source files remain consistent after writes.",
+      "title": "V2 single source of contact truth",
+      "acceptance_criterion": "Use only private-data/contacts-v2.json schema 2.0.0 for live edits, with nested people stored once. Old v1.1.0 bundle and split files remain untouched historical archives.",
       "priority": "P0",
       "source_document": "requirements/04-architecture-security.md",
       "field_ids": [],
       "test_ids": [
         "T-024",
-        "T-026"
+        "T-026",
+        "T-035",
+        "T-036"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -108,14 +113,16 @@
       "id": "CT-001",
       "area": "contacts",
       "title": "Guest 1 separately editable",
-      "acceptance_criterion": "New contact has independently persisted nonblank Guest 1, both frontend and domain.",
+      "acceptance_criterion": "Guest 1 input edits the display name of the person referenced by guest_roles.guest_1_person_id. A newly created contact must have one named active Guest 1.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
+        "FR-C-006",
         "FR-C-002"
       ],
       "test_ids": [
-        "T-001"
+        "T-001",
+        "T-035"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -124,14 +131,16 @@
       "id": "CT-002",
       "area": "contacts",
       "title": "Guest 2 separately editable and optional",
-      "acceptance_criterion": "Guest 2 is separate, nullable, editable and does not overwrite Guest 1.",
+      "acceptance_criterion": "Guest 2 input resolves an optional second person ID or preserves an unnamed guest_2_unnamed_label. An unnamed placeholder is not invented as a person.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-003"
+        "FR-C-007",
+        "FR-C-008"
       ],
       "test_ids": [
-        "T-001"
+        "T-001",
+        "T-035"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -140,16 +149,21 @@
       "id": "CT-003",
       "area": "contacts",
       "title": "Named people never dropped",
-      "acceptance_criterion": "Preserve every named person and separately stored original name, including other/additional guests.",
+      "acceptance_criterion": "Keep all original named people once in contact.people[], preserve original name_as_entered, and retain the immutable source archive and provenance.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-019",
-        "FR-C-020"
+        "FR-C-002",
+        "FR-C-003",
+        "FR-C-004",
+        "FR-C-005",
+        "FR-C-021",
+        "FR-C-022"
       ],
       "test_ids": [
         "T-002",
-        "T-033"
+        "T-033",
+        "T-036"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -158,17 +172,20 @@
       "id": "CT-004",
       "area": "contacts",
       "title": "Contact add and edit",
-      "acceptance_criterion": "Owner can create and edit guest names, surname, recipient, household, notes, and structured address while preserving immutable ID.",
+      "acceptance_criterion": "Add/edit structured contact fields and nested people, preserve immutable contact/person IDs and import evidence, increment contact revision.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
         "FR-C-001",
-        "FR-C-004",
-        "FR-C-005",
-        "FR-C-006"
+        "FR-C-009",
+        "FR-C-010",
+        "FR-C-002",
+        "FR-C-012"
       ],
       "test_ids": [
-        "T-002"
+        "T-002",
+        "T-035",
+        "T-037"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -177,17 +194,17 @@
       "id": "CT-005",
       "area": "contacts",
       "title": "Explicit missing fields",
-      "acceptance_criterion": "Address fields allow explicit null; missing_fields records every missing property.",
+      "acceptance_criterion": "Persist nulls for absent optional and required values and regenerate missing_fields on each write instead of maintaining an editable missing index.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-007",
-        "FR-C-008",
-        "FR-C-009",
-        "FR-C-010",
-        "FR-C-011",
-        "FR-C-012",
-        "FR-C-013"
+        "FR-C-013",
+        "FR-C-014",
+        "FR-C-015",
+        "FR-C-016",
+        "FR-C-017",
+        "FR-C-018",
+        "FR-C-019"
       ],
       "test_ids": [
         "T-003"
@@ -203,7 +220,7 @@
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-014"
+        "FR-C-020"
       ],
       "test_ids": [
         "T-003"
@@ -219,7 +236,7 @@
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-011"
+        "FR-C-017"
       ],
       "test_ids": [
         "T-004"
@@ -231,14 +248,14 @@
       "id": "CT-008",
       "area": "contacts",
       "title": "Soft-delete contact",
-      "acceptance_criterion": "Mark inactive using is_deleted, deleted_at, deleted_by, deletion_reason; never remove master row.",
+      "acceptance_criterion": "Set four soft-delete metadata fields on v2 contact, never physically remove a person/source/history record.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-015",
-        "FR-C-016",
-        "FR-C-017",
-        "FR-C-018"
+        "FR-C-026",
+        "FR-C-027",
+        "FR-C-028",
+        "FR-C-029"
       ],
       "test_ids": [
         "T-005"
@@ -264,7 +281,7 @@
       "id": "CT-010",
       "area": "contacts",
       "title": "No cascading history deletion",
-      "acceptance_criterion": "Contact soft-deletion retains people and source records, and never rewrites old holiday-list snapshots.",
+      "acceptance_criterion": "Soft-deleting a household never removes embedded people, changes immutable legacy sources or rewrites finalized historical list snapshots.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
@@ -292,11 +309,11 @@
       "id": "CT-012",
       "area": "contacts",
       "title": "Optimistic contact concurrency",
-      "acceptance_criterion": "Reject stale edits with visible conflict and no silent last-write-wins.",
+      "acceptance_criterion": "Guard every single-file contacts-v2.json edit with contact revision and current Git blob SHA; reject stale edits without updating legacy files.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-021"
+        "FR-C-024"
       ],
       "test_ids": [
         "T-008"
@@ -308,15 +325,19 @@
       "id": "CT-013",
       "area": "contacts",
       "title": "Additional named people represented",
-      "acceptance_criterion": "Preserve additional names in contact and saved-list snapshot, not only Guest 1 and Guest 2.",
+      "acceptance_criterion": "Keep named additional people in nested people[] and copied people_snapshot[]; export the extra names in their own CSV column.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
-        "FR-C-005",
-        "FR-C-019"
+        "FR-C-010",
+        "FR-C-002",
+        "FR-C-003",
+        "FR-C-004",
+        "FR-C-005"
       ],
       "test_ids": [
-        "T-033"
+        "T-033",
+        "T-016"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -367,7 +388,7 @@
       "id": "HL-004",
       "area": "holiday_lists",
       "title": "Persist draft",
-      "acceptance_criterion": "Selections, copied names/addresses, notes, and status survive reload and restart.",
+      "acceptance_criterion": "Persist list draft entry snapshots of all people, guest role references, address and labels; reloading does not rehydrate from live contacts.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
@@ -381,12 +402,13 @@
       "id": "HL-005",
       "area": "holiday_lists",
       "title": "Finalize immutable snapshot",
-      "acceptance_criterion": "Freeze finalized list values, prohibit edits to finalized version.",
+      "acceptance_criterion": "Finalization writes a separate immutable list-version file; never overwrite it, even when archiving.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
       "test_ids": [
-        "T-012"
+        "T-012",
+        "T-038"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -395,7 +417,7 @@
       "id": "HL-006",
       "area": "holiday_lists",
       "title": "Source edits cannot rewrite history",
-      "acceptance_criterion": "Final list never picks up later contact changes, including name or address.",
+      "acceptance_criterion": "Contact edits, soft deletion and restores cannot modify any finalized list-version snapshot.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
@@ -437,12 +459,13 @@
       "id": "HL-009",
       "area": "holiday_lists",
       "title": "Archive list without physical deletion",
-      "acceptance_criterion": "Archived list hidden in active index but visible via archive filter.",
+      "acceptance_criterion": "Archive a holiday list by changing only private index metadata; retain every immutable finalized version unchanged.",
       "priority": "P1",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
       "test_ids": [
-        "T-015"
+        "T-015",
+        "T-038"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -465,12 +488,13 @@
       "id": "HL-011",
       "area": "holiday_lists",
       "title": "Named people in snapshots",
-      "acceptance_criterion": "Retain additional named people in list snapshot even if not in the two guest CSV columns.",
+      "acceptance_criterion": "Each saved entry carries one people_snapshot[] with every named person and guest role IDs referring only to people within that snapshot.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
       "test_ids": [
-        "T-033"
+        "T-033",
+        "T-035"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -493,12 +517,13 @@
       "id": "CSV-002",
       "area": "csv",
       "title": "Separate guest columns",
-      "acceptance_criterion": "CSV fixed header includes Contact ID, Guest 1, Guest 2, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country.",
+      "acceptance_criterion": "Export columns in order: Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country.",
       "priority": "P0",
       "source_document": "requirements/03-ui-screens.md",
       "field_ids": [],
       "test_ids": [
-        "T-016"
+        "T-016",
+        "T-033"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -549,7 +574,7 @@
       "id": "CSV-006",
       "area": "csv",
       "title": "Export saved snapshot not live contact",
-      "acceptance_criterion": "Historical export uses stored list values and does not mutate draft/finalized list.",
+      "acceptance_criterion": "Resolve Guest 1, Guest 2, extra people and addresses from the saved snapshot only, never today's contact directory.",
       "priority": "P0",
       "source_document": "requirements/03-ui-screens.md",
       "field_ids": [],
@@ -605,12 +630,13 @@
       "id": "SEC-004",
       "area": "security",
       "title": "Canonical write consistency",
-      "acceptance_criterion": "Master and its projections remain consistent after successful or interrupted commits.",
+      "acceptance_criterion": "Single canonical contact write is atomic and never mutates frozen legacy v1.1 files; multi-file list finalization is atomic or idempotently recoverable.",
       "priority": "P0",
       "source_document": "requirements/04-architecture-security.md",
       "field_ids": [],
       "test_ids": [
-        "T-024"
+        "T-024",
+        "T-038"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -633,12 +659,14 @@
       "id": "SEC-006",
       "area": "security",
       "title": "Safe migration from current data",
-      "acceptance_criterion": "Read-modify-write source schema v1.1.0 without dropping existing names, people, source IDs, or null fields.",
+      "acceptance_criterion": "Validate and edit normalized contact schema 2.0.0, maintaining legacy import evidence, names, contact/person IDs and nulls; reject v1.1 writes and unknown schema versions.",
       "priority": "P0",
       "source_document": "requirements/04-architecture-security.md",
       "field_ids": [],
       "test_ids": [
-        "T-026"
+        "T-026",
+        "T-036",
+        "T-039"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -740,6 +768,94 @@
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-014",
+      "area": "contacts",
+      "title": "Guest role integrity",
+      "acceptance_criterion": "Guest 1 references one existing active nested person; named Guest 2 is optional, distinct, and mutually exclusive with the preserved unnamed placeholder.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-002",
+        "FR-C-003",
+        "FR-C-006",
+        "FR-C-007",
+        "FR-C-008"
+      ],
+      "test_ids": [
+        "T-035"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-015",
+      "area": "contacts",
+      "title": "Lossless migration and frozen provenance",
+      "acceptance_criterion": "V2 retains every old ID, person, name, addressee, address, source link and soft-delete value while leaving the 154 source rows and all v1.1.0 JSON files unchanged.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-021",
+        "FR-C-022"
+      ],
+      "test_ids": [
+        "T-036"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-016",
+      "area": "contacts",
+      "title": "Explicit override behavior",
+      "acceptance_criterion": "If Guest 1 or Guest 2 changes on imported contact with recipient override, require a choice to keep or refresh the card addressee; never silently reset legacy text.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-012"
+      ],
+      "test_ids": [
+        "T-037"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "HL-015",
+      "area": "holiday_lists",
+      "title": "Immutable archive metadata isolation",
+      "acceptance_criterion": "Archive/unarchive only mutates independent private catalog metadata and never changes finalized version bytes.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [],
+      "test_ids": [
+        "T-038"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "SYS-002",
+      "area": "quality",
+      "title": "Schema validation and reference checking",
+      "acceptance_criterion": "Validate v2 contacts and list JSON against formal schemas and enforce semantic integrity for person role refs, unique IDs, snapshots, and null consistency.",
+      "priority": "P0",
+      "source_document": "requirements/05-acceptance-tests.md",
+      "field_ids": [
+        "FR-C-002",
+        "FR-C-003",
+        "FR-C-006",
+        "FR-C-007",
+        "FR-C-008"
+      ],
+      "test_ids": [
+        "T-039"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
     }
-  ]
+  ],
+  "updated_on": "2026-11-04"
 }
