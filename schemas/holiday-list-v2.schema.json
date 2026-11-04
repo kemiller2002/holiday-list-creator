@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:echelon:holiday-list:saved-list:v2.0.0",
+  "title": "Saved holiday list version 2.0.0",
+  "description": "Historical list version. Once status=finalized, document bytes must never be modified. Mutable archive flags belong in a separate private index.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "list_id",
+    "version_id",
+    "revision",
+    "title",
+    "year",
+    "occasion",
+    "notes",
+    "status",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "finalized_at",
+    "previous_version_id",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "list_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1900,
+      "maximum": 2200
+    },
+    "occasion": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "finalized"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finalized_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "previous_version_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entry_id",
+          "contact_id",
+          "include",
+          "guest_1_person_id",
+          "guest_2_person_id",
+          "guest_2_unnamed_label",
+          "people_snapshot",
+          "card_addressee_snapshot",
+          "surname_snapshot",
+          "additional_names_or_household_snapshot",
+          "household_designation_snapshot",
+          "address_snapshot",
+          "missing_fields_snapshot",
+          "source_contact_revision",
+          "notes"
+        ],
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "contact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "include": {
+            "type": "boolean"
+          },
+          "guest_1_person_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "guest_2_person_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "guest_2_unnamed_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "people_snapshot": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "person_id",
+                "role",
+                "name_as_entered",
+                "display_name"
+              ],
+              "properties": {
+                "person_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "role": {
+                  "enum": [
+                    "guest_1",
+                    "guest_2",
+                    "additional_named_person"
+                  ]
+                },
+                "name_as_entered": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "display_name": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "card_addressee_snapshot": {
+            "type": "string",
+            "minLength": 1
+          },
+          "surname_snapshot": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "additional_names_or_household_snapshot": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "household_designation_snapshot": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address_snapshot": {
+            "type": "object",
+            "required": [
+              "line_1",
+              "line_2",
+              "city",
+              "state",
+              "postal_code",
+              "country"
+            ],
+            "properties": {
+              "line_1": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "line_2": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "city": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postal_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "missing_fields_snapshot": {
+            "type": "object",
+            "additionalProperties": {
+              "const": "missing"
+            }
+          },
+          "source_contact_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "finalized"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finalized_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "draft"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finalized_at": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
