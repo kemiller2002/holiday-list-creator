@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:echelon:holiday-list:contacts:v2.0.0",
+  "title": "Holiday contact directory 2.0.0",
+  "description": "Schema for private-data/contacts-v2.json in PRIVATE holiday-list. Structural validation only; cross-record references and source integrity require additional tests.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "created_at",
+    "authority",
+    "provenance",
+    "rules",
+    "contacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "original_file",
+        "original_blob_sha",
+        "original_schema_version",
+        "source_records_file",
+        "source_record_count",
+        "original_contact_count",
+        "original_person_count"
+      ],
+      "properties": {
+        "original_file": {
+          "type": "string"
+        },
+        "original_blob_sha": {
+          "type": "string"
+        },
+        "original_schema_version": {
+          "const": "1.1.0"
+        },
+        "source_records_file": {
+          "type": "string"
+        },
+        "source_record_count": {
+          "type": "integer"
+        },
+        "original_contact_count": {
+          "type": "integer"
+        },
+        "original_person_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "contact_id",
+          "revision",
+          "people",
+          "guest_roles",
+          "surname",
+          "additional_names_or_household",
+          "household_designation",
+          "card_addressee_override",
+          "address",
+          "address_last_verified",
+          "notes",
+          "missing_fields",
+          "review_flags",
+          "source_record_ids",
+          "legacy_import",
+          "is_deleted",
+          "deleted_at",
+          "deleted_by",
+          "deletion_reason"
+        ],
+        "properties": {
+          "contact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "people": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "person_id",
+                "contact_id",
+                "source_field",
+                "role",
+                "name_as_entered",
+                "display_name",
+                "display_name_derived_from_surname",
+                "is_deleted",
+                "deleted_at",
+                "deleted_by",
+                "deletion_reason"
+              ],
+              "properties": {
+                "person_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contact_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "role": {
+                  "enum": [
+                    "guest_1",
+                    "guest_2",
+                    "additional_named_person"
+                  ]
+                },
+                "name_as_entered": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "display_name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "display_name_derived_from_surname": {
+                  "type": "boolean"
+                },
+                "is_deleted": {
+                  "type": "boolean"
+                },
+                "deleted_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "deleted_by": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "deletion_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "guest_roles": {
+            "type": "object",
+            "required": [
+              "guest_1_person_id",
+              "guest_2_person_id",
+              "guest_2_unnamed_label"
+            ],
+            "properties": {
+              "guest_1_person_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "guest_2_person_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "guest_2_unnamed_label": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "surname": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "additional_names_or_household": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "household_designation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "card_addressee_override": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": "object",
+            "required": [
+              "line_1",
+              "line_2",
+              "city",
+              "state",
+              "postal_code",
+              "country"
+            ],
+            "properties": {
+              "line_1": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "line_2": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "city": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postal_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "address_last_verified": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "missing_fields": {
+            "type": "object",
+            "additionalProperties": {
+              "const": "missing"
+            }
+          },
+          "review_flags": {
+            "type": "object",
+            "required": [
+              "possible_same_household_contact_ids",
+              "imported_review_reasons"
+            ],
+            "properties": {
+              "possible_same_household_contact_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "imported_review_reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "source_record_ids": {
+            "type": "array",
+            "minItems": 0,
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "legacy_import": {
+            "type": "object",
+            "required": [
+              "names_as_imported",
+              "card_recipient_as_imported",
+              "address_as_entered",
+              "missing_fields_as_imported",
+              "mailing_status_at_import",
+              "duplicate_status_at_import",
+              "source_occurrences",
+              "conflicting_source_fields_at_import"
+            ],
+            "properties": {
+              "names_as_imported": {
+                "type": "object"
+              },
+              "card_recipient_as_imported": {
+                "type": "string"
+              },
+              "address_as_entered": {
+                "type": "object"
+              },
+              "missing_fields_as_imported": {
+                "type": "object"
+              },
+              "mailing_status_at_import": {
+                "type": "string"
+              },
+              "duplicate_status_at_import": {
+                "type": "string"
+              },
+              "source_occurrences": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "conflicting_source_fields_at_import": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          },
+          "is_deleted": {
+            "type": "boolean"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "deleted_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "deletion_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
