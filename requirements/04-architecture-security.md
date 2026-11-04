@@ -24,15 +24,15 @@ Do not add Kubernetes, Terraform, a general microservice platform, or an unneces
 ## A-01: Server-mediated repository access
 
 - The server uses GitHub App installation authorization limited to the private `holiday-list` repository and minimum file-content permissions. Never embed a personal access token, GitHub App private key, or installation token in the WASM client.
-- The private `private-data/christmas-cards-2026.json` bundle is the master contact data source. The three split projections must be updated together or derived from the master and treated as read-only projections. Prefer **single-master write** followed by verified regenerated projections.
-- Store new list files under `private-data/lists/{year}/`. Lists are independent documents, and a catalog/index is rebuildable from those documents.
+- The private `private-data/contacts-v2.json` is the **only editable master** (schema 2.0.0): people are stored once, nested within contacts. The v1.1.0 bundle and split files are frozen historical artifacts and MUST NOT be modified by the creator application.
+- Store drafts under `private-data/holiday-lists/{list_id}/draft.json`, immutable final versions under `private-data/holiday-lists/{list_id}/versions/{version_id}.json`, and archive/visibility metadata in a separate private index. The list entry contains a complete historical snapshot, including all named people.
 - Protect every API endpoint with authenticated owner authorization; disallow public anonymous list enumeration and exports.
 - The backend must not expose arbitrary repository paths, let clients specify a GitHub ref arbitrarily, or permit access to other repositories.
 
 ## A-02: Atomic writes and versioning
 
 - Read master blob SHA, validate submitted `If-Match`/version, apply edits, write a new commit; reject stale updates with HTTP 409 and show a meaningful conflict UI.
-- A master contact update changing person projections must not leave a partial canonical state. Write master + projections in one atomic Git tree commit **or** make projections derived at runtime and regenerate them later as a verified operation. Pick one approach during implementation and document it.
+- A contact edit is a single revision-checked write to `contacts-v2.json`; do not dual-write or regenerate legacy v1.1.0 people/contact files. Validate all guest role IDs, immutable provenance, and missing/null fields before commit. For list version transitions that change multiple paths, use a single atomic Git tree commit or an idempotent recoverable protocol, never a partial finalized state.
 - Saved-list changes use a checked revision. Finalized list versions must not be overwritten, even by a retry or stale client.
 - Use idempotency keys (or validated unique operation IDs) for contact create, list create, and finalize to prevent duplicate records after retry.
 - Atomic operation history must be durable: Git commit SHA, UTC time, and actor, with no full PII values in log payload.
@@ -78,8 +78,8 @@ API payload fields use explicit nullable values; JSON schema validation is manda
 - No localStorage as the authority for contacts or saved lists. Draft unsaved UI edits may be held in memory, but confirmed Save requires server persistence.
 - Use stable IDs for records across years; never derive IDs solely from names, ZIP codes, or array position.
 - Restoring a deleted contact does not retroactively change already finalized lists.
-- Migration/read support for `holiday-list` schema v1.1.0 is mandatory before mutation. Reject unknown future schema versions rather than silently dropping fields.
-- All existing names, raw source values, source IDs, and null/missing fields survive a read-modify-write round trip.
+- Load and write `contacts-v2.json` as schema 2.0.0 only. The reviewed migration from 1.1.0 has already produced v2 and retained the original imports. Protect the v1.1.0 files as read-only and reject unrecognized future schemas instead of dropping their fields.
+- All existing names, raw source values, source IDs, and null/missing fields survive a read-modify-write round trip. Guest 1 and Guest 2 are IDs pointing into the contact's single nested people array. The export and saved-list snapshot must resolve guest names from the saved people snapshot, not from live contacts.
 
 ## A-06: Before go-live
 
