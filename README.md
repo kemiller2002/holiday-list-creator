@@ -26,7 +26,7 @@ Create and preserve holiday mailing lists from a reusable contact directory; add
 8. [Contact JSON schema v2](schemas/contacts-v2.schema.json)
 9. [Holiday-list JSON schema v2](schemas/holiday-list-v2.schema.json)
 
-**Status:** requirements and schema contracts updated; no UI, backend, or application test is claimed complete. The private contact data has already been migrated losslessly to **schema 2.1.0**. Source remains 61 contacts and 90 named people, with 154 original source records preserved read-only. Each editable contact now has a unique immutable **Row ID** for future spreadsheet export and safe re-import, in addition to its internal Contact ID. [See canonical v2 data](https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json).
+**Status:** requirements and schema contracts updated; no UI, backend, or application test is claimed complete. The private contact data has already been migrated losslessly to **schema 2.1.0**. The original migration baseline was 61 contacts and 90 named people, with 154 original source records preserved read-only. As of the 2026-11-06 private reconciliation, there are 79 contacts and 120 named people; the older 154 source records remain unchanged. Each editable contact now has a unique immutable **Row ID** for future spreadsheet export and safe re-import, in addition to its internal Contact ID. [See canonical v2 data](https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json).
 
 ## Data separation
 
