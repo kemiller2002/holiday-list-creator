@@ -8,7 +8,7 @@ The **only editable contact authority** is the PRIVATE repository file:
 https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json
 
 - schema_version = 2.1.0
-- Current baseline = 61 contacts with 90 named people
+- Original migration baseline = 61 contacts and 90 named people; current private directory after 2026-11-06 intake reconciliation = 79 contacts and 120 named people. These numbers are observed snapshots, not hardcoded business rules.
 - Historical import = 154 original rows in frozen v1.1.0 archives
 - Separate old contacts-2026.json, people-2026.json, source-records-2024.json, and christmas-cards-2026.json are READ-ONLY historical files, not editable projections.
 - Never write real names or addresses to this public creator repository, browser application assets, CI logs, or public deployments.
@@ -100,3 +100,11 @@ The migration verified 61 unchanged contact IDs, 90 unchanged person IDs and per
 A future **contact-directory export**, distinct from a saved holiday-list CSV, must always include `Row ID`, `Contact ID` and `Contact Revision` in the first three columns. Re-import uses `Row ID` to find exactly one existing contact, validates `Contact ID` is the same, and compares the exported revision with the current contact revision. Do **not** infer a match from name/address or position. Reject conflicting IDs, duplicate row IDs, unknown row IDs, invalid/missing IDs, or stale revisions, with an actionable review report and **no partial application**. Never treat a blank Row ID as authorization to create a new record. New contact creation is an explicit separate operation that issues both IDs server-side.
 
 Row IDs are permanent and survive reordering, changes to Guest 1 or Guest 2, address edits, soft deletion and restoration. Exporting a historical holiday list includes the frozen contact row ID, but a historical export must **not** be automatically interpreted as a contact-update file. These are design requirements; CSV contact import and export functionality has **not** been implemented.
+
+## Intake policy: printer flags are historical, not contact eligibility
+
+The owner's decision is to save identifiable incoming mailing entries as active contacts regardless of original `Send To Printer` or `Label Not Needed` flags. Those fields reflected label reprints, **not** whether people should be maintained. Do not automatically soft-delete a contact due to either flag. An owner must explicitly soft-delete and may restore later.
+
+Deduplicate repeated worksheet occurrences only when the same identifiable household is unambiguous; preserve every original source-row link. A blank or unknown address does not prevent storing a contact. Do not invent a current address when two historical addresses conflict: save the named contact with an unresolved address, preserve both source variants, and request later review. A token like `ss` is not sufficient evidence of a real person: preserve the intake row and flag it for human identification rather than inventing a contact.
+
+2025 attendance-response workbooks remain separate evidence, not proof that a person is a mailing contact or that a third-party guest should be merged into an existing household. The live directory remains PRIVATE; source imports need no front-end repository token.
