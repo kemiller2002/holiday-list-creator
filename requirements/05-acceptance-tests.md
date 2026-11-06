@@ -48,6 +48,7 @@ Every requirement must map to a test or documented acceptance check. These are *
 | T-040 | CT-017 | All 61 migrated contacts have unique, immutable Row IDs; sort, name edit, address edit, soft delete and restore preserve Row ID and Contact ID. |
 | T-041 | CSV-002, CSV-007 | Saved-list CSV includes Row ID from the frozen entry snapshot; contact-directory CSV includes Row ID, Contact ID and Contact Revision before names. |
 | T-042 | CSV-008 | Import dry-run rejects duplicate, missing, unknown or modified Row ID, mismatched Contact ID and stale revision without modifying any contacts. |
+| T-043 | CT-018 | Reconcile synthetic contacts with printer flags TRUE/FALSE and Label Not Needed: all identifiable contacts are retained active; incomplete/conflicting addresses are held for review; unidentifiable junk stays in intake; no automatic soft-delete. |
 
 ## Fixture coverage
 
