@@ -7,7 +7,7 @@
 The **only editable contact authority** is the PRIVATE repository file:
 https://github.com/kemiller2002/holiday-list/blob/main/private-data/contacts-v2.json
 
-- schema_version = 2.0.0
+- schema_version = 2.1.0
 - Current baseline = 61 contacts with 90 named people
 - Historical import = 154 original rows in frozen v1.1.0 archives
 - Separate old contacts-2026.json, people-2026.json, source-records-2024.json, and christmas-cards-2026.json are READ-ONLY historical files, not editable projections.
@@ -28,6 +28,7 @@ Raw imported source records remain an immutable archive outside the editable dom
 | Field ID | Path | Contract |
 | --- | --- | --- |
 | FR-C-001 | contact_id | Immutable, stable across edits and soft deletes |
+| FR-C-030 | row_id | Unique immutable identifier for this contact's externally downloaded spreadsheet row, independent of sort order, name, mailing address or array position. Existing format: `ROW-{contact_id}`. New records receive a unique server-issued row ID. |
 | FR-C-002 | people[] | Only editable collection of named individuals; no separate writable people index |
 | FR-C-003 | people[].person_id | Unique ID; each person.contact_id matches parent |
 | FR-C-004 | people[].name_as_entered | Preserve original entered name, never overwrite as a result of edits |
@@ -82,14 +83,20 @@ Structural contract: ../schemas/holiday-list-v2.schema.json
 - A stable list_id groups versions; version_id uniquely identifies each version; revision is monotonic; previous_version_id connects a copied prior final version.
 - Status is **draft** or **finalized**. Finalized version files must never be overwritten, including when changing archive status.
 - A draft can be updated with optimistic concurrency and saved durably. Do not automatically refresh draft snapshots when contacts change; offer an explicit diff/refresh action.
-- Each entry carries entry_id, contact_id, include, guest_1_person_id, guest_2_person_id, guest_2_unnamed_label, people_snapshot[], card_addressee_snapshot, surname_snapshot, additional_names_or_household_snapshot, household_designation_snapshot, address_snapshot, missing_fields_snapshot, source_contact_revision and optional notes.
+- Each entry carries entry_id, contact_id, **contact_row_id**, include, guest_1_person_id, guest_2_person_id, guest_2_unnamed_label, people_snapshot[], card_addressee_snapshot, surname_snapshot, additional_names_or_household_snapshot, household_designation_snapshot, address_snapshot, missing_fields_snapshot, source_contact_revision and optional notes.
 - Guest IDs in a list entry resolve **only to its copied people_snapshot[]**. CSV and historical display must not fetch new contact values.
 - Store drafts under private-data/holiday-lists/{list_id}/draft.json, final versions under private-data/holiday-lists/{list_id}/versions/{version_id}.json, and archive flags in separate private-data/holiday-lists/index.json. Immutable finalized versions never change merely because they're archived.
 - An entry is unique by contact_id within a list; unrelated recipients at the same postal address are not automatically merged.
-- Default CSV includes Guest 1, Guest 2, Additional Named People, and Additional Names / Household, each separately, plus recipient and all address columns.
+- Default saved-list CSV includes **Row ID**, Contact ID, Guest 1, Guest 2, Additional Named People, and Additional Names / Household, each separately, plus recipient and all address columns. The Row ID is the frozen `contact_row_id`.
 
 ## Preservation checks and implementation gates
 
-The migration verified 61 unchanged contact IDs, 90 unchanged person IDs and person objects, untouched 154 original source records, retained source links, original names, addresses, import evidence, addressees and soft-delete fields. Guest 1 is resolved in all 61 records; 26 have named Guest 2 references and three have unnamed Guest 2 placeholders.
+The migration verified 61 unchanged contact IDs, 90 unchanged person IDs and person objects, untouched 154 original source records, retained source links, original names, addresses, import evidence, addressees and soft-delete fields. A subsequent 2.1.0 migration assigned 61 unique `row_id` values without changing other contact fields. Guest 1 is resolved in all 61 records; 26 have named Guest 2 references and three have unnamed Guest 2 placeholders.
 
 **NOT_RUN:** JSON Schema library validation, F# typed-domain integration, contact edit/reload, secure API checks, list snapshot persistence, CSV interoperability, browser accessibility, and runtime writes. Build agents must not report those passing without execution evidence.
+
+## External contact CSV editing (planned, not implemented)
+
+A future **contact-directory export**, distinct from a saved holiday-list CSV, must always include `Row ID`, `Contact ID` and `Contact Revision` in the first three columns. Re-import uses `Row ID` to find exactly one existing contact, validates `Contact ID` is the same, and compares the exported revision with the current contact revision. Do **not** infer a match from name/address or position. Reject conflicting IDs, duplicate row IDs, unknown row IDs, invalid/missing IDs, or stale revisions, with an actionable review report and **no partial application**. Never treat a blank Row ID as authorization to create a new record. New contact creation is an explicit separate operation that issues both IDs server-side.
+
+Row IDs are permanent and survive reordering, changes to Guest 1 or Guest 2, address edits, soft deletion and restoration. Exporting a historical holiday list includes the frozen contact row ID, but a historical export must **not** be automatically interpreted as a contact-update file. These are design requirements; CSV contact import and export functionality has **not** been implemented.
