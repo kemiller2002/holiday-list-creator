@@ -6,7 +6,7 @@
 
 | Phase | Scope | Exit criteria |
 | --- | --- | --- |
-| 0. Preflight | Check F# SDK; Limen, Forma, and Folio compatibility; load private `contacts-v2.json` schema 2.0.0 and validate frozen import preservation; confirm hosting/auth | Verified, pinned working dependencies and safe synthetic fixture |
+| 0. Preflight | Check F# SDK; Limen, Forma, and Folio compatibility; load private `contacts-v2.json` schema 2.1.0 and validate frozen import preservation; confirm hosting/auth | Verified, pinned working dependencies and safe synthetic fixture |
 | 1. Domain | Typed v2 contact, nested person, guest role references, null/missing fields, soft delete, snapshots, CSV | Domain tests T-001..T-020 and T-035..T-039 pass on synthetic fixtures |
 | 2. Persistence | Authenticated F# API, server-only GitHub App access, version-controlled contact and list repository writes | Tests for safe single-master read/edit, concurrency, unmodified legacy archive and service restart |
 | 3. Contacts screens | Forma directory, details, Guest 1 + Guest 2 form, create, edit, soft delete, restore | Persisted UI workflows on phone and desktop |
@@ -24,6 +24,7 @@ Do not publish a mock-only UI as complete. A feature becomes complete only when 
 - **D-05 List versioning:** Draft revision with compare-and-swap, immutable final revision, separate revision ID on copy.
 - **D-06 Address check:** Incomplete values allowed for contact save and list draft; explicit warnings at finalization/export. No fabricated validation.
 - **D-07 Additional people:** Carry all named people into each list entry's `people_snapshot[]`; default CSV has separate Guest 1, Guest 2, Additional Named People, and Additional Names / Household columns.
+- **D-10 External row identity:** Keep immutable `row_id` across contact edits and spreadsheet sorting. A future contact export includes Row ID, Contact ID, and Contact Revision; its import must match IDs, detect stale revisions and never silently merge by name.
 - **D-08 Recovery:** Restore from repository history; document audit metadata and idempotency semantics.
 - **D-09 Security review:** Verify CORS, sessions, logging, secrets, browser storage, export protections before live access.
 
