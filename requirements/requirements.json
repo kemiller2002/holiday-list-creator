@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "generated_for": "holiday-list-creator",
   "created_on": "2026-11-04",
   "source_repo": {
@@ -909,6 +909,24 @@
       ],
       "test_ids": [
         "T-042"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-018",
+      "area": "contacts",
+      "title": "Preserve intake contacts independently of label printing flags",
+      "acceptance_criterion": "When reconciling identifiable intake people, historical Send To Printer and Label Not Needed flags never prevent adding them to the contact directory or trigger soft deletion; preserve source rows, keep conflicting current address unresolved, do not fabricate contacts for unidentified placeholders, and soft-delete only by explicit owner action.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-001",
+        "FR-C-030",
+        "FR-C-026"
+      ],
+      "test_ids": [
+        "T-043"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
