@@ -68,3 +68,7 @@ Sending mail, printing directly to a printer, label-layout designer, bulk email/
 ## J-07: Download, edit and reconcile contacts externally (future)
 
 Contact CSV export must include a stable `Row ID`, internal `Contact ID`, and `Contact Revision`. A subsequent import must match exactly on row ID and contact ID, reject missing/unknown/duplicate IDs and revision conflicts, and present a dry-run before updating. Never infer a match from CSV line position, name or address. This flow is a *planned requirement*, not an implemented feature. Saved historical holiday-list CSVs include the frozen row ID but are not directly accepted as contact-directory updates.
+
+## J-08: Intake all identifiable households, independent of historical printer flags
+
+When reconciling original CSV intake, **do not use `Send To Printer` or `Label Not Needed` as a contact import filter**; those columns documented previous label reprinting. Store identifiable households as active contacts, retain each source occurrence and original names, use unique permanent contact and Row IDs, and permit later explicit soft deletion. Incomplete or conflicting addresses must remain incomplete/unverified rather than being guessed. Unidentifiable placeholders are retained for owner review and must not be silently converted into people. A CSV's historical printer-selection state must not control future saved holiday-list membership.
