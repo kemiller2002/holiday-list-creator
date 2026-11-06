@@ -64,3 +64,7 @@ Sending mail, printing directly to a printer, label-layout designer, bulk email/
 - A saved/finalized list is historical evidence, not a live query over today's contacts.
 - Zero sensitive source data appears in this public application repository or public deployments.
 - No action labeled "Remove from list" can soft-delete a master contact.
+
+## J-07: Download, edit and reconcile contacts externally (future)
+
+Contact CSV export must include a stable `Row ID`, internal `Contact ID`, and `Contact Revision`. A subsequent import must match exactly on row ID and contact ID, reject missing/unknown/duplicate IDs and revision conflicts, and present a dry-run before updating. Never infer a match from CSV line position, name or address. This flow is a *planned requirement*, not an implemented feature. Saved historical holiday-list CSVs include the frozen row ID but are not directly accepted as contact-directory updates.
