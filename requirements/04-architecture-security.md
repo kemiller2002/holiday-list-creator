@@ -17,6 +17,8 @@ Authenticated browser (F# / Limen WASM / Forma)
         canonical contact JSON + saved lists
 ```
 
+A future contact-directory CSV export/import is distinct from historical holiday-list export: require Row ID, Contact ID and Contact Revision columns on contact exports, and dry-run all updates with strict ID/revision checks. This functionality is only specified, not implemented.
+
 The creator repository is public. The source `holiday-list` repository is private. **Public GitHub Pages is acceptable for static UI assets only** after verifying that no customer/person/contact data, GitHub secret, token, API key, or authenticated response is embedded or cached in publicly accessible assets. A protected API service is mandatory for persistence to the private repo. Limen/Forma package versions must be verified at implementation time rather than guessed here.
 
 Do not add Kubernetes, Terraform, a general microservice platform, or an unnecessary database in v1. Use Folio only for a later printable card/report export, not required for CSV.
@@ -24,7 +26,7 @@ Do not add Kubernetes, Terraform, a general microservice platform, or an unneces
 ## A-01: Server-mediated repository access
 
 - The server uses GitHub App installation authorization limited to the private `holiday-list` repository and minimum file-content permissions. Never embed a personal access token, GitHub App private key, or installation token in the WASM client.
-- The private `private-data/contacts-v2.json` is the **only editable master** (schema 2.0.0): people are stored once, nested within contacts. The v1.1.0 bundle and split files are frozen historical artifacts and MUST NOT be modified by the creator application.
+- The private `private-data/contacts-v2.json` is the **only editable master** (schema 2.1.0): people are stored once, nested within contacts. The v1.1.0 bundle and split files are frozen historical artifacts and MUST NOT be modified by the creator application.
 - Store drafts under `private-data/holiday-lists/{list_id}/draft.json`, immutable final versions under `private-data/holiday-lists/{list_id}/versions/{version_id}.json`, and archive/visibility metadata in a separate private index. The list entry contains a complete historical snapshot, including all named people.
 - Protect every API endpoint with authenticated owner authorization; disallow public anonymous list enumeration and exports.
 - The backend must not expose arbitrary repository paths, let clients specify a GitHub ref arbitrarily, or permit access to other repositories.
