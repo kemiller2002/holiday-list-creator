@@ -45,8 +45,13 @@ Every requirement must map to a test or documented acceptance check. These are *
 | T-037 | CT-016 | Editing an imported guest with a saved recipient override requires explicit keep/refresh choice, with no silent stale label rewrite. |
 | T-038 | HL-015 | Archiving/unarchiving only changes catalog metadata; the exact finalized list-version bytes remain unchanged. |
 | T-039 | SYS-002 | Structural JSON Schema validates contacts v2 and holiday-list versions v2; invalid references and duplicate IDs fail semantic validation. |
+| T-040 | CT-017 | All 61 migrated contacts have unique, immutable Row IDs; sort, name edit, address edit, soft delete and restore preserve Row ID and Contact ID. |
+| T-041 | CSV-002, CSV-007 | Saved-list CSV includes Row ID from the frozen entry snapshot; contact-directory CSV includes Row ID, Contact ID and Contact Revision before names. |
+| T-042 | CSV-008 | Import dry-run rejects duplicate, missing, unknown or modified Row ID, mismatched Contact ID and stale revision without modifying any contacts. |
 
 ## Fixture coverage
+
+Synthetic records must also cover stable row IDs after sorting, duplicate row IDs, changed row/contact ID pairing, missing/unknown row ID, stale contact revision, and a no-op failed reimport.
 
 Synthetic records must cover: only Guest 1, Guest 1 plus Guest 2, additional guests, extended family, missing address line/city/state/ZIP, leading-zero postal code, long text, non-ASCII names, quotes/commas/line breaks, formula-looking text, two different contacts at one address, potential duplicates, deleted records, archive, source contact changing after finalization, and optimistic concurrency races.
 
