@@ -39,7 +39,7 @@ Dashboard
 
 ## UI-003: Contact directory
 - Search by card recipient, Guest 1, Guest 2, surname, and address. Filters: Active, Deleted, All, Missing Address, Potential Duplicate.
-- Columns/cards: addressee, Guest 1, Guest 2, location (city/state), mailing status, actions.
+- Columns/cards: addressee, Guest 1, Guest 2, location (city/state), mailing status, actions. Show read-only Row ID in contact detail with a copy control; it never changes after edits or sorting.
 - On phone, each contact is a stacked card with accessible actions; desktop can use a sortable table. Hide sensitive address preview in compact summary if shoulder-surfing mode is enabled (enhancement).
 - Pagination or virtualized render with stable sort and IDs. Display match count and no-results state. Search must never permanently mutate data.
 
@@ -119,7 +119,7 @@ Other
 - Choose **Mail-ready only** or **All included** (explicit warning for incomplete). Preview first five sample rows in user session, not logs.
 - Show selected list title/revision and number of rows that will be exported.
 - CSV columns in **exact order**:
-  `Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country`. Resolve guest names and additional named people from the **saved list's people_snapshot[]**, not the live contact.
+  `Row ID, Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country`. Row ID is the immutable saved `contact_row_id`, not the ordinal CSV row number. Resolve guest names and additional named people from the **saved list's people_snapshot[]**, not the live contact.
 - Use one row per list entry where `include=true`, optional missing fields represented as empty CSV cells. Guest 2 is a distinct column even when absent. Unnamed `Guest` placeholders are labeled as such for review, not treated as verified person names.
 - User receives a local download; do not upload exported CSV to a public artifact bucket or place it in a build directory.
 - Use filename `holiday-list-{year}-{safe-list-slug}-r{revision}.csv`, sanitize filename and prevent path traversal.
@@ -132,3 +132,7 @@ Other
 - Long names, 120-character street lines, ZIP+4, foreign state/region, and 150% text zoom must wrap without leaking out of card boundaries.
 - Test rounded Forma containers, dialogs, mobile menus, two-name form, dates, input focus, sticky headers, and long validation messages.
 - Components must be Playwright-drivable using stable accessible labels/test identifiers when appropriate.
+
+## UI-014: External contact-file round trip (future)
+
+Add a distinct contact-directory CSV export using Row ID, Contact ID, Contact Revision and editable fields, with Guest 1 and Guest 2 in their own columns. Later contact CSV import must provide a dry-run preview, matched/unmatched counts, duplicate row-ID errors, changed-field comparisons and stale-revision errors before explicit commit. A missing Row ID must never cause a name/address-based auto-merge or silent creation. Preserve the original upload for audit only in **private** storage. This screen is a **planned requirement**, not a completed capability.
