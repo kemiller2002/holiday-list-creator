@@ -1,14 +1,15 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "generated_for": "holiday-list-creator",
   "created_on": "2026-11-04",
   "source_repo": {
     "repo": "kemiller2002/holiday-list",
-    "schema_version": "2.0.0",
+    "schema_version": "2.1.0",
     "data_classification": "private",
     "canonical_path": "private-data/contacts-v2.json",
     "legacy_schema_version": "1.1.0",
-    "legacy_files_read_only": true
+    "legacy_files_read_only": true,
+    "row_id_policy": "Globally unique immutable row identifier, matched with contact_id and guarded by contact revision"
   },
   "creator_repo": {
     "repo": "kemiller2002/holiday-list-creator",
@@ -53,7 +54,7 @@
       "id": "ARCH-003",
       "area": "architecture",
       "title": "V2 single source of contact truth",
-      "acceptance_criterion": "Use only private-data/contacts-v2.json schema 2.0.0 for live edits, with nested people stored once. Old v1.1.0 bundle and split files remain untouched historical archives.",
+      "acceptance_criterion": "Store only canonical private contacts-v2.json schema 2.1.0 as editable source; record a unique immutable row_id on each contact and preserve old read-only imports.",
       "priority": "P0",
       "source_document": "requirements/04-architecture-security.md",
       "field_ids": [],
@@ -61,7 +62,8 @@
         "T-024",
         "T-026",
         "T-035",
-        "T-036"
+        "T-036",
+        "T-040"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -172,7 +174,7 @@
       "id": "CT-004",
       "area": "contacts",
       "title": "Contact add and edit",
-      "acceptance_criterion": "Add/edit structured contact fields and nested people, preserve immutable contact/person IDs and import evidence, increment contact revision.",
+      "acceptance_criterion": "Create/edit contact fields without changing contact_id, row_id, or imported person and source IDs; increment contact revision.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [
@@ -185,7 +187,8 @@
       "test_ids": [
         "T-002",
         "T-035",
-        "T-037"
+        "T-037",
+        "T-040"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -388,12 +391,13 @@
       "id": "HL-004",
       "area": "holiday_lists",
       "title": "Persist draft",
-      "acceptance_criterion": "Persist list draft entry snapshots of all people, guest role references, address and labels; reloading does not rehydrate from live contacts.",
+      "acceptance_criterion": "Persist list draft snapshots including the stable source contact row ID, all copied people and address values across reload.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
       "test_ids": [
-        "T-011"
+        "T-011",
+        "T-041"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -488,13 +492,14 @@
       "id": "HL-011",
       "area": "holiday_lists",
       "title": "Named people in snapshots",
-      "acceptance_criterion": "Each saved entry carries one people_snapshot[] with every named person and guest role IDs referring only to people within that snapshot.",
+      "acceptance_criterion": "Preserve contact_row_id and people_snapshot[] on each list entry; Guest 1 and Guest 2 refer only to copied person snapshots.",
       "priority": "P0",
       "source_document": "requirements/01-scope-workflows.md",
       "field_ids": [],
       "test_ids": [
         "T-033",
-        "T-035"
+        "T-035",
+        "T-041"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -517,13 +522,14 @@
       "id": "CSV-002",
       "area": "csv",
       "title": "Separate guest columns",
-      "acceptance_criterion": "Export columns in order: Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country.",
+      "acceptance_criterion": "Saved-list CSV columns in order: Row ID, Contact ID, Guest 1, Guest 2, Additional Named People, Card Recipient, Additional Names / Household, Address Line 1, Address Line 2, City, State, Postal Code, Country.",
       "priority": "P0",
       "source_document": "requirements/03-ui-screens.md",
       "field_ids": [],
       "test_ids": [
         "T-016",
-        "T-033"
+        "T-033",
+        "T-041"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -659,14 +665,15 @@
       "id": "SEC-006",
       "area": "security",
       "title": "Safe migration from current data",
-      "acceptance_criterion": "Validate and edit normalized contact schema 2.0.0, maintaining legacy import evidence, names, contact/person IDs and nulls; reject v1.1 writes and unknown schema versions.",
+      "acceptance_criterion": "Validate canonical contact schema 2.1.0; preserve row IDs, imported evidence, all person IDs and addresses; reject changes to frozen files and unrecognized versions.",
       "priority": "P0",
       "source_document": "requirements/04-architecture-security.md",
       "field_ids": [],
       "test_ids": [
         "T-026",
         "T-036",
-        "T-039"
+        "T-039",
+        "T-040"
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
@@ -855,7 +862,57 @@
       ],
       "status": "not_implemented",
       "verification": "NOT_RUN"
+    },
+    {
+      "id": "CT-017",
+      "area": "contacts",
+      "title": "Immutable row identity",
+      "acceptance_criterion": "Every contact has an immutable row_id independent of name, position and address, unique within the directory; preserve through all edits/deletes/restores and reject unauthorized changes.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-030"
+      ],
+      "test_ids": [
+        "T-040"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-007",
+      "area": "csv",
+      "title": "Export contact directory with row IDs",
+      "acceptance_criterion": "Future contacts CSV export always emits Row ID, Contact ID, Contact Revision followed by separated guest names, household and address fields; list CSV exports snapshot Row ID.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-030",
+        "FR-C-024"
+      ],
+      "test_ids": [
+        "T-041"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
+    },
+    {
+      "id": "CSV-008",
+      "area": "csv",
+      "title": "Safe row-ID keyed contact reimport",
+      "acceptance_criterion": "Future contact import must dry-run, match by row_id, verify contact_id and expected revision, reject missing/unknown/duplicate/mismatched IDs, never name/address match or silently create, and avoid partial updates.",
+      "priority": "P0",
+      "source_document": "requirements/02-data-contracts.md",
+      "field_ids": [
+        "FR-C-030",
+        "FR-C-024"
+      ],
+      "test_ids": [
+        "T-042"
+      ],
+      "status": "not_implemented",
+      "verification": "NOT_RUN"
     }
   ],
-  "updated_on": "2026-11-04"
+  "updated_on": "2026-11-06"
 }
